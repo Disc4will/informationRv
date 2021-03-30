@@ -5,7 +5,7 @@ logsign = ['|', '+']
 signs = {'(': ')', '{': '}', '[': ']'}
 
 
-class stack:
+class stdstack:
     left = []
 
     def __init__(self):
@@ -29,7 +29,7 @@ hasLOWer = re.compile(r'\(.*\)')
 
 
 def condisplit(string):  # 切分逻辑式
-    st = stack()
+    st = stdstack()
     oriplace = 0
     subset = []
     for i in range(len(string)):
@@ -60,10 +60,6 @@ def condisplit(string):  # 切分逻辑式
     return subset
 
 
-subset = condisplit(string)
-print(subset)
-
-
 def logconvert(subset):  # 切分后的逻辑式转换
     condi = {'and': [], 'or': []}
     for i in subset:
@@ -80,7 +76,6 @@ def logconvert(subset):  # 切分后的逻辑式转换
                 count = i.count('+')
                 count += i.count('|')
                 sub = condisplit(i)
-                # symbol = subset[subset.index(i) - 1][-1]
                 symbol = sub[-2][-1]
                 if count == 1 or count == 0:  # 无附属
                     if symbol == '+':
@@ -132,15 +127,6 @@ def countsign(string):
     return cout
 
 
-a = logconvert(subset)
-sign = tuple(a.keys())
-
-print(logconvert(subset))
-a = {'and': ['e+f', 'a+b', {'and': ['c+d'], 'or': []}], 'or': []}
-dic = a
-condi = {}
-
-
 def respit(dic):  # 递归处理未分割条件
     for i in list(dic.keys()):
         for j in list(dic[i]):
@@ -170,19 +156,70 @@ def respit(dic):  # 递归处理未分割条件
     return dic
 
 
+# TODO:建立搜索向量
+class vec:
+    onpos = []
+    offpos = []
+
+    def __init__(self):
+        self.onpos = []
+        self.offpos = []
+
+    def test(self):
+        print(self.onpos)
+        print(self.offpos)
+
+
+def nextLV(dic, vector):
+    for i in list(dic.keys()):
+        for j in dic[i]:
+            if isinstance(j, dict):
+                vector = nextLV(j, vector)
+            else:
+                if i == 'and':
+                    if not j.startswith('~'):
+                        vector.onpos.append(wordset.index(j))
+                    else:
+                        vector.onpos.appned(wordset.index(j[1:]))
+                elif i == 'or':
+                    if not j.startswith('~'):
+                        vector.offpos.append(wordset.index(j))
+                    else:
+                        vector.offpos.appned(wordset.index(j[1:]))
+    return vector
+
+
+subset = condisplit(string)
+print(subset)
+
+a = logconvert(subset)
+
+print(logconvert(subset))
+a = {'and': ['e+f', 'a+b', {'and': ['c+d'], 'or': []}], 'or': []}
+dic = a
+condi = {}
+
 dic = logconvert(subset)
+print(dic)
 dic = {'and': ['c', 'd'], 'or': []}
 dic = respit(dic)
 print(dic)
-wordset=['a','b','c','d','e','f']
-#TODO:建立搜索向量
-for i in list(dic.keys()):
-    for j in dic[i]:
-        if  isinstance(j, dict):
+wordset = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
-        else:
-            if not j.startswith('~'):
-                onpos.append(wordset.index(j))
-            else:
-                offpos.appned(wordset.index(j[1:]))
-# for i in list(dic.key+s()):
+testtype = {'and': ['a', 'b', 'c', {'and': ['d', {
+    'and': ['e', {'and': [{'and': ['f', {'and': ['g'], 'or': []}], 'or': []}], 'or': []}], 'or': ['h']}],
+                                    'or': []}], 'or': []}
+vector = vec
+d = nextLV(testtype, vector)
+d.test(d)
+
+
+def handler(string):
+    vector = vec
+    tmp = condisplit(string)
+    tmp = logconvert(tmp)
+    tmp = respit(tmp)
+    res = nextLV(tmp,vector)
+    return res
+e=handler(string)
+e.test(e)
