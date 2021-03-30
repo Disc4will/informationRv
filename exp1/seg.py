@@ -157,13 +157,18 @@ def respit(dic):  # 递归处理未分割条件
 
 
 # TODO:建立搜索向量
+# FIXME:不能处理非
 class vec:
     onpos = []
     offpos = []
+    nonpos = []
+    noffpos=[]
 
     def __init__(self):
         self.onpos = []
         self.offpos = []
+        self.nonpos=[]
+        self.noffpos=[]
 
     def test(self):
         print(self.onpos)
@@ -180,16 +185,16 @@ def nextLV(dic, vector):
                     if not j.startswith('~'):
                         vector.onpos.append(wordset.index(j))
                     else:
-                        vector.onpos.appned(wordset.index(j[1:]))
+                        vector.nonpos.appned(wordset.index(j[1:]))
                 elif i == 'or':
                     if not j.startswith('~'):
                         vector.offpos.append(wordset.index(j))
                     else:
-                        vector.offpos.appned(wordset.index(j[1:]))
+                        vector.noffpos.appned(wordset.index(j[1:]))
     return vector
 
 
-subset = condisplit(string)
+'''subset = condisplit(string)
 print(subset)
 
 a = logconvert(subset)
@@ -204,14 +209,14 @@ print(dic)
 dic = {'and': ['c', 'd'], 'or': []}
 dic = respit(dic)
 print(dic)
-wordset = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
 
 testtype = {'and': ['a', 'b', 'c', {'and': ['d', {
-    'and': ['e', {'and': [{'and': ['f', {'and': ['g'], 'or': []}], 'or': []}], 'or': []}], 'or': ['h']}],
-                                    'or': []}], 'or': []}
-vector = vec
+    'and': ['e', {'and': [{'and': ['f', {'and': ['g'], 'or': ['i']}], 'or': ['j']}], 'or': []}], 'or': ['h']}],
+                                    'or': []}], 'or': []}'''
+'''vector = vec
 d = nextLV(testtype, vector)
-d.test(d)
+d.test(d)'''
 
 
 def handler(string):
@@ -219,7 +224,9 @@ def handler(string):
     tmp = condisplit(string)
     tmp = logconvert(tmp)
     tmp = respit(tmp)
-    res = nextLV(tmp,vector)
+    res = nextLV(tmp, vector)
     return res
-e=handler(string)
+
+wordset = ['一个决定','test','nh','a','b','hello','我的','c','d']
+e = handler(string)
 e.test(e)

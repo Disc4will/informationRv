@@ -27,7 +27,7 @@ def init_first_pr(length):
 # 计算PageRank值
 def compute_pagerankX(p, m, v):
     i = 1
-    while (True):
+    while True:
         v = p * np.dot(m, v) + (1 - p) * v
         i = i + 1
         if i >= 10:
@@ -40,8 +40,23 @@ if __name__ == '__main__':
                   [1, 0, 0, 1],
                   [1, 0, 0, 1],
                   [1, 1, 0, 0]])
+    b = np.array([1, 1, 0, 0])
+    res = []
+    searchres = []
+    for i in range(a.shape[0]):
+        res.append((a[i] == b).all())
+    for j in range(len(res)):
+        if res[j]:
+            searchres.append(j)
+    if len(searchres) == 0:
+        print("No result found!")
+    print(searchres)
+'''    a = np.array([[0, 1, 1, 0],
+                  [1, 0, 0, 1],
+                  [1, 0, 0, 1],
+                  [1, 1, 0, 0]])
     relation_array = init_realtion_array(a)
     pr = init_first_pr(relation_array.shape[0])
     p = 0.8
     print(compute_pagerankX(p, relation_array, pr))
-    print(p, relation_array, pr)
+    print(p, relation_array, pr)'''
