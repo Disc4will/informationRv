@@ -1,62 +1,45 @@
+import pandas as pd
 import numpy as np
+from scipy.sparse import csc_matrix
 
 
 # TODO:写一个获取文件中矩阵的模块，排序的模块
 
-# 获取一个关系矩阵，这里测试来用，直接赋值返回
-def prepare(matrix):  # 横入纵出
-    cnt = np.sum(matrix, axis=0)
-    res = np.divide(matrix, cnt)
-    return res
 
-
-def init_realtion_array(matrix):
-    cnt = np.sum(matrix, axis=0)
-    res = np.divide(matrix, cnt)
-    return res
-
-
-# 初始化最初的pr值
-def init_first_pr(length):
-    pr = np.zeros((length, 1), dtype=float)  # 构造一个存放pr值的矩阵
-    for i in range(length):
-        pr[i] = float(1) / length
-        return pr
-
-
-# 计算PageRank值
-def compute_pagerankX(p, m, v):
-    i = 1
-    while True:
-        v = p * np.dot(m, v) + (1 - p) * v
-        i = i + 1
-        if i >= 10:
-            break
-            return v
+def pageRank(G, s=.85, maxerr=.0001):
+    n = G.shape[0]
+    # 将 G into 马尔科夫 A
+    A = csc_matrix(G, dtype=np.float)
+    rsums = np.array(A.sum(1))[:, 0]
+    ri, ci = A.nonzero()
+    A.data /= rsums[ri]
+    sink = rsums == 0
+    # 计算PR值，直到满足收敛条件
+    ro, r = np.zeros(n), np.ones(n)
+    while np.sum(np.abs(r - ro)) > maxerr:
+        ro = r.copy()
+    for i in range(0, n):
+        Ai = np.array(A[:, i].todense())[:, 0]
+        Di = sink / float(n)
+        Ei = np.ones(n) / float(n)
+        r[i] = ro.dot(Ai * s + Di * s + Ei * (1 - s))
+    # 归一化
+    return r / float(sum(r))
 
 
 if __name__ == '__main__':
-    a = np.array([[0, 1, 1, 0],
-                  [1, 0, 0, 1],
-                  [1, 0, 0, 1],
-                  [1, 1, 0, 0]])
-    b = np.array([1, 1, 0, 0])
-    res = []
-    searchres = []
-    for i in range(a.shape[0]):
-        res.append((a[i] == b).all())
-    for j in range(len(res)):
-        if res[j]:
-            searchres.append(j)
-    if len(searchres) == 0:
-        print("No result found!")
-    print(searchres)
-'''    a = np.array([[0, 1, 1, 0],
-                  [1, 0, 0, 1],
-                  [1, 0, 0, 1],
-                  [1, 1, 0, 0]])
-    relation_array = init_realtion_array(a)
-    pr = init_first_pr(relation_array.shape[0])
-    p = 0.8
-    print(compute_pagerankX(p, relation_array, pr))
-    print(p, relation_array, pr)'''
+    a = np.array([[1, 1, 0, 1, 1, 0, 0, 1, 0, 0]
+                     , [1, 0, 1, 0, 0, 1, 1, 1, 0, 1]
+                     , [1, 1, 1, 0, 0, 1, 0, 0, 0, 0]
+                     , [0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
+                     , [0, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+                     , [1, 0, 1, 1, 1, 0, 1, 1, 1, 0]
+                     , [0, 1, 0, 0, 0, 0, 0, 0, 1, 1]
+                     , [0, 1, 1, 0, 1, 1, 0, 1, 1, 1]
+                     , [0, 0, 0, 0, 1, 1, 0, 0, 1, 1]
+                     , [1, 1, 1, 0, 1, 0, 0, 1, 0, 1]])
+    print("连接矩阵：")
+    print(pd.DataFrame(a))
+    res = pageRank(a, s=0.85)
+    print("PageRank值：")
+    print(pd.DataFrame(res))

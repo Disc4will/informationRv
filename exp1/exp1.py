@@ -11,12 +11,12 @@ from collections import Counter
 
 
 def cosim(a, b):
-    '''
+    """
 
     :param a: numpy array
     :param b: same
     :return: cosine simularity
-    '''
+    """
     f = lambda x: np.sum(np.square(x))
     return np.dot(a, b.T) / np.sqrt(f(a) * f(b))
 
@@ -81,7 +81,7 @@ def getcontent():  # 获取文件内容，同时产生文件地址名称对应�
             else:
                 vector = pd.concat([vector, g])  # 合并词频
                 vector = vector.groupby('words').sum()
-            wordset.append(vector.index.values)
+            wordset.append(g.index.values)
     bag = vector.index.values
     vescset = []
     for i in wordset:
@@ -95,15 +95,6 @@ def getcontent():  # 获取文件内容，同时产生文件地址名称对应�
         vescset.append(vesc)
     searchspace = np.array(vescset)  # 获取搜索空间向量
     # np.place(searchspace, searchspace == 0, np.inf)
-
-
-'''------- another way of count
-    count=Counter(content)
-    print(count.most_common(2))
-        words = []
-    for i in content:
-        words.extend(i)
-'''
 
 
 def getfilename(path):
@@ -145,34 +136,17 @@ def stopwordsHandle():
         stopwords = []
 
 
-'''def handler(string):
-    st = stack(string)
-    st.part()
-    vector = vec
-    print(string)
-    tmp = condisplit(st.string)
-    print(tmp)
-    tmp = logconvert(tmp)
-    tmp = respit(tmp)
-    res = nextLV(tmp, vector)
-    print(res)
-    return res'''
-
-
 def getinput():
     # condi = input('input the ')
     global bag
-    condi = 'present sociaity+i+am'
+    condi = 'present+sociaity+i+am'
     # FIXME:替换
-    print("condi:", condi)
     condi = handler(condi, bag=bag)
-    print(condi.onpos)
     return condi
 
 
 def constructor(condi):
-    global wordset
-    # ori = '0' * len(bag)
+    global wordsetq
     ori = np.array([0 for i in range(len(bag))])
     cset = []
     for i in range(len(ori)):
@@ -247,10 +221,11 @@ def sim_search(request):
 
 def getres(fin):
     global filedict
-    res=[]
+    res = []
     for i in fin:
         res.append(filedict[i])
     return res
+
 
 def teardown(tak):
     res = []
@@ -261,13 +236,22 @@ def teardown(tak):
             res.append(i)
     return res
 
+
 def resprint(res):
+    names = []
+    for i in filedict.values():
+        if isinstance(i, list):
+            for j in i:
+                names.append(j)
+        else:
+            names.append(i)
     print('bool search result:')
     for i in res[0]:
-        print(i)
+        print(names[i])
     print('sim search result:')
     for i in res[1]:
-        print(i)
+        print(names[i])
+
 
 if __name__ == '__main__':
     vaildcheck()
@@ -279,26 +263,11 @@ if __name__ == '__main__':
     getfilename(path)
     getcontent()
     fileset = teardown(list(filedict.values()))
-    print(list(filedict.values()))
     # TODO:上面为正常处理获取文件词袋
     request = getinput()
     # FIXME:要用特殊用例才有用
     request = constructor(request)
     boolres = bool_search(request)
     simres = sim_search(request)
-    reset=[boolres,simres]
+    reset = [boolres, simres]
     resprint(reset)
-
-'''test = [1, 2, 3, 4]
-print(np.array([0 for i in range(len(test))]))'''
-'''vaildcheck()
-global stopwords, vector, wordset, searchspace
-wordset = []
-stopwordsHandle()
-vector = []
-getfilename(path)
-getcontent()
-a = parase('一个决定+(hello|我的+(test))')
-absent+form+present
-我的+一个决定 我+觉得不行
-present+i+am'''

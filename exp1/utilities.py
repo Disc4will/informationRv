@@ -51,8 +51,7 @@ def handle(string, index):
 class stack:
     left = []
     string = ''
-    '''        for i in range(len(stringrefine)):
-                if stringrefine[i] in logsign and stringrefine[i]+1=='(':'''
+
 
     def __init__(self, string):
         string.replace(' and ', '+')
@@ -324,12 +323,9 @@ def nextLV(dic, vector, wordset):
 
 def handler(string, bag):
     st = stack(string)
-    print(st.string)
     vector = vec()
     tmp = condisplit(st.string)
-    print('error', tmp)
     tmp = logconvert(tmp)
-    print(tmp)
     tmp = respit(tmp)
     res = nextLV(tmp, vector, bag)
     return res
